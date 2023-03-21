@@ -1,1 +1,3 @@
-export const nextTick = (func: (value: void) => void): Promise<void> => Promise.resolve().then(func);
+export * as openModal from './openModal';
+export * from './calc';
+export * from './util';
