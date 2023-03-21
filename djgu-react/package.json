@@ -4,8 +4,7 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "engines": {
     "node": ">=10"
@@ -18,6 +17,13 @@
     "prepare": "tsdx build",
     "size": "size-limit",
     "analyze": "size-limit --why"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gdj2032/djgu-common/tree/main/djgu-react"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "peerDependencies": {
     "react": ">=16.8"
