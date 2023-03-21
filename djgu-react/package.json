@@ -20,7 +20,7 @@
     "analyze": "size-limit --why"
   },
   "peerDependencies": {
-    "react": ">=16"
+    "react": ">=16.8"
   },
   "husky": {
     "hooks": {
@@ -33,7 +33,7 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "djgu-react",
+  "name": "@djgu/react-comps",
   "author": "djgu",
   "module": "dist/djgu-react.esm.js",
   "size-limit": [
@@ -47,7 +47,9 @@
     }
   ],
   "devDependencies": {
+    "@babel/core": "^7.21.3",
     "@size-limit/preset-small-lib": "^8.2.4",
+    "@types/lodash": "^4.14.191",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "husky": "^8.0.3",
@@ -57,5 +59,12 @@
     "tsdx": "^0.14.1",
     "tslib": "^2.5.0",
     "typescript": "^5.0.2"
+  },
+  "dependencies": {
+    "@rollup/plugin-alias": "^4.0.3",
+    "babel-plugin-module-resolver": "^5.0.0",
+    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
+    "react-use": "^17.4.0"
   }
 }
