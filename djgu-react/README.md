@@ -4,3 +4,96 @@
 npm i @djgu/react-comps
 yarn add @djgu/react-comps
 ```
+
+# hooks
+
+## usePagination 表格分页查询
+
+```js
+const {
+  dataSource, loading, paginationProps, debounceRefresh
+} = usePagination<InterFace>(async ({ limit, offset, current }) => {
+  // 接口请求
+  return {
+    dataSource: [],
+    total: 0
+  }
+})
+```
+
+## useVirtualList 虚拟列表加载更多
+
+```js
+const {
+  dataSource, loading, debounceRefresh
+} = useVirtualList<InterFace>(async ({ limit, offset, current }) => {
+  // 接口请求
+  return {
+    dataSource: [],
+    total: 0
+  }
+})
+```
+
+# 弹窗 openModal(react18.0之前) / openModal2(react18.0之后) (以 antd5.x 为例)
+
+## modal.tsx
+
+```js
+import React, { useState } from 'react';
+import { Modal } from 'antd';
+import { IModalProps } from '@/utils/openModal';
+
+export interface IDemoModalProps extends IModalProps {
+}
+
+export function DemoModal(props: IDemoModalProps) {
+  const { close, visible, ...arg } = props;
+  const [loading, setLoading] = useState(false)
+
+  const handleOk = () => {
+    setLoading(true)
+    close?.(true)
+    setLoading(false)
+  }
+  return (
+    <Modal
+      open={visible}
+      title="demo"
+      okText="确定"
+      cancelText="取消"
+      onCancel={() => close?.()}
+      onOk={handleOk}
+      confirmLoading={loading}
+      {...arg}
+    >
+      DemoModal
+    </Modal>
+  )
+}
+```
+
+## openModal
+
+```js
+const { destroy } = openModal<IDemoModalProps>(DemoModal, {
+  afterClose: (isOk) => {
+    destroy()
+    if (isOk) {
+      // ...
+    }
+  }
+})
+```
+
+# cmx 加减乘除计算 去除精度问题
+
+
+```js
+
+cmx.add(1, 1)
+cmx.sub(1, 1)
+cmx.mul(1, 1)
+cmx.div(1, 1)
+
+```

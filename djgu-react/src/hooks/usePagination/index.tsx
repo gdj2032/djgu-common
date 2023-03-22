@@ -1,33 +1,59 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable @typescript-eslint/naming-convention */
 import {
-  useEffect, useState, useRef, useCallback, DependencyList
+  useEffect, useState, useRef, useCallback, DependencyList, ReactNode
 } from 'react';
 import { debounce } from 'lodash';
 import { useLatest } from 'react-use';
 import { nextTick } from '@/utils';
 
+interface IPaginationProps {
+  current: number;
+  pageSize: number;
+  total: number;
+  onChange: (page: number, pageSize: number) => Promise<void>;
+  onShowSizeChange: (size: number, current: number) => Promise<void>;
+  showTotal?: (t: number) => ReactNode;
+  showQuickJumper?: boolean;
+  showSizeChanger?: boolean;
+}
+
 export interface PaginationResult<T> {
+  /**
+   * 表格基本数据
+   *
+   * @memberof PaginationResult
+   */
   tableProps: {
     loading?: boolean;
     dataSource: T[];
   };
-  paginationProps: {
-    current: number;
-    pageSize: number;
-    total: number;
-    onChange: (page: number, pageSize: number) => Promise<void>;
-    // onPageSizeChange: (size: number, current: number) => Promise<void>;
-    // showQuickJumper?: boolean;
-    // showSizeChanger?: boolean;
-  };
+  /**
+   * 分页信息
+   *
+   * @memberof PaginationResult
+   */
+  paginationProps: IPaginationProps;
+  /**
+   * 是否完成了请求
+   *
+   * @memberof PaginationResult
+   */
   isFirstComplete: boolean;
   /**
    * resetPage 是否重置查询
    */
   refresh: (resetPage?: boolean) => Promise<void>;
+  /**
+   * 刷新
+   * @resetPage 是否重置刷新
+   *
+   * @memberof PaginationResult
+   */
   debounceRefresh: (resetPage?: boolean) => void;
-  /* 快速逃避方案 */
+  /**
+   * 快速逃避方案
+   *
+   * @memberof PaginationResult
+   */
   setDataSource: (data: T[]) => void;
 }
 
@@ -37,18 +63,42 @@ interface IServerParams {
   current: number;
 }
 
-const usePagination = <T,>(
+interface IServerInfo<T> {
+  /**
+   * 服务请求
+   *
+   * @memberof IServerInfo
+   */
   server: (params: IServerParams) => {
     dataSource: T[]; total: number
   } | Promise<{ dataSource: T[]; total: number }>,
-  deps?: DependencyList, // 依赖条件
+  deps?: DependencyList, // 依赖条件 数据更新默认执行server
   option?: {
+    /**
+     * 第一次是否执行server
+     *
+     */
     isReady?: boolean;
+    /**
+     * 默认的数据
+     *
+     */
     dataSource?: T[];
+    /**
+     * 默认当前第几页
+     *
+     */
     current?: number;
+    /**
+     * 默认一页几条数据
+     *
+     */
     pageSize?: number;
-  },
-): PaginationResult<T> => {
+  }
+}
+
+const usePagination = <T,>(info: IServerInfo<T>): PaginationResult<T> => {
+  const { server, deps, option } = info;
   const {
     isReady = true,
     dataSource: propDataSource = [],
@@ -145,25 +195,25 @@ const usePagination = <T,>(
     },
     paginationProps: {
       current,
-      // defaultPageSize: pageSize,
       pageSize,
       total,
       onChange: async (_page: number, _pageSize: number) => {
         setCurrent(_page);
         setPageSize(_pageSize)
-        // todo: fix
-        // await refresh();
         await nextTick(async () => {
           await refresh();
         });
       },
-      // onPageSizeChange: async (size: number, _cur: number) => {
-      // onPageSizeChange: async (size: number) => {
-      //   setPageSize(size);
-      //   await refresh();
-      // },
-      // showQuickJumper: true,
-      // showSizeChanger: true
+      onShowSizeChange: async (cur: number, size: number) => {
+        setCurrent(cur)
+        setPageSize(size)
+        await nextTick(async () => {
+          await refresh();
+        });
+      },
+      showTotal: (_t: number) => `共 ${_t} 条`,
+      showQuickJumper: true,
+      showSizeChanger: true,
     },
     isFirstComplete,
     refresh,

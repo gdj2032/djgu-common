@@ -1,12 +1,13 @@
-import React, { ComponentType } from 'react';
-import ReactDOM from 'react-dom';
+// @ts-nocheck
+import React from 'react';
+import { ComponentType } from 'react';
 
 const destroyFns: Array<() => void> = [];
 
 interface IModalProps {
   /* 限制这3个参数必须 */
   visible: boolean;
-  onClose: any;
+  // onClose: any;
   afterClose: (params?: any) => void
   [key: string]: any;
 }
@@ -18,7 +19,7 @@ interface ICallBack<ITModalProps> {
   update: (configUpdate: Partial<ITModalProps> | ((prevConfig: IModalProps) => IModalProps)) => void;
 }
 
-function openModal<ITModalProps = IModalProps>(
+function openModal2<ITModalProps = IModalProps>(
   DialogComponent: ComponentType<ITModalProps>,
   config: Omit<ITModalProps, 'visible' | 'afterClose'>,
 ): ICallBack<ITModalProps> {
@@ -27,12 +28,28 @@ function openModal<ITModalProps = IModalProps>(
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
   let currentConfig = { ...(config || {}), close, visible: true } as any;
 
+  let hydrateRoot;
+
+  try {
+    const ReactDOM = require('react-dom/client')
+    hydrateRoot = ReactDOM.hydrateRoot
+  } catch (error) {
+    console.info('--- hydrateRoot error --->', error);
+  }
+
+  if (!hydrateRoot) {
+    console.info('--- hydrateRoot not exist, react version must > 18.0 ---');
+    return {} as any
+  }
+
+
+  const root = hydrateRoot(div, <DialogComponent />)
+
   // function destroy(...args: any[]) {
   function destroy() {
-    const unmountResult = ReactDOM.unmountComponentAtNode(div);
-    if (unmountResult && div.parentNode) {
-      div.parentNode.removeChild(div);
-    }
+    // console.info('--- destroyFns --->', destroyFns);
+    // root.unmount()
+    div?.parentNode?.removeChild?.(div);
     // const triggerCancel = args.some((param) => param && param.triggerCancel);
     // if (config.onClose && triggerCancel) {
     //   config.onClose(false, args);
@@ -54,16 +71,11 @@ function openModal<ITModalProps = IModalProps>(
      * Sync render blocks React event. Let's make this async.
      */
     setTimeout(() => {
-      ReactDOM.render(<DialogComponent {...props} />, div);
+      root.render(<DialogComponent {...props} />);
     });
   }
 
   function close(...args: any[]) {
-    // todo:支持
-    // let timeOut = setTimeout(() => {
-    //   destroy();
-    // }, 1000);
-
     currentConfig = {
       ...currentConfig,
       visible: false,
@@ -100,6 +112,5 @@ function openModal<ITModalProps = IModalProps>(
 }
 
 export {
-  openModal,
-  IModalProps,
+  openModal2,
 }

@@ -1,17 +1,32 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-use-before-define */
-/* eslint-disable comma-spacing */
-/* eslint-disable no-underscore-dangle */
 // 虚拟列表加载
 import { debounce } from 'lodash';
-import { useEffect, useRef, useState } from 'react';
+import { DependencyList, useEffect, useRef, useState } from 'react';
 import { PAGE_SIZE } from '@/constants';
 
 export interface IPaginationResult<T> {
-  data: T[];
+  /**
+   * 数据
+   *
+   * @memberof IPaginationResult
+   */
+  dataSource: T[];
+  /**
+   * 加载状态
+   *
+   * @memberof IPaginationResult
+   */
   loading?: boolean;
+  /**
+   * 是否完成了一次请求
+   *
+   * @memberof IPaginationResult
+   */
   isFirstComplete: boolean;
+  /**
+   * 分页信息
+   *
+   * @memberof IPaginationResult
+   */
   paginationProps: {
     current: number;
     pageSize: number;
@@ -35,15 +50,35 @@ interface IServerParams {
   current: number;
 }
 
-const useVirtualList = <T,>(
+interface IServerInfo<T> {
   server: (params: IServerParams) => { dataSource: T[]; total: number } | Promise<{ dataSource: T[]; total: number }>,
+  deps?: DependencyList, // 依赖条件 数据更新默认执行server
   option?: {
+    /**
+     * 第一次是否执行server
+     *
+     */
     isReady?: boolean;
+    /**
+     * 默认的数据
+     *
+     */
     dataSource?: T[];
-    current?: number; // 当前第几页 默认第1页开始 1
-    pageSize?: number; // = offset
-  },
-): IPaginationResult<T> => {
+    /**
+     * 默认当前第几页
+     *
+     */
+    current?: number;
+    /**
+     * 默认一页几条数据
+     *
+     */
+    pageSize?: number;
+  }
+}
+
+const useVirtualList = <T,>(info: IServerInfo<T>): IPaginationResult<T> => {
+  const { server, deps, option } = info;
   const {
     isReady = true,
     dataSource: propDataSource = [],
@@ -111,14 +146,17 @@ const useVirtualList = <T,>(
     await doSearch();
   };
 
+  /* 重置逻辑 */
+  const _deps = [...(deps || []), isReady];
+
   useEffect(() => {
     if (!isReady) return;
     refresh(true);
-  }, [])
+  }, _deps);
 
   return {
     loading: isLoading,
-    data: dataSource,
+    dataSource,
     paginationProps: {
       current,
       pageSize,
