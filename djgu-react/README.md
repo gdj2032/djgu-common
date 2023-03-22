@@ -11,14 +11,14 @@ yarn add @djgu/react-comps
 
 ```js
 const {
-  dataSource, loading, paginationProps, debounceRefresh
+  tableProps, paginationProps, debounceRefresh
 } = usePagination<InterFace>(async ({ limit, offset, current }) => {
   // 接口请求
   return {
     dataSource: [],
     total: 0
   }
-})
+}, [])
 ```
 
 ## useVirtualList 虚拟列表加载更多
