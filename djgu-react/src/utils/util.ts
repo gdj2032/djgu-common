@@ -23,3 +23,15 @@ export /**
     a.remove();
     window.URL.revokeObjectURL(objectUrl);
   }
+
+/**
+ * 随机key
+ *
+ * @author gdj
+ * @date 2023-03-22
+ * @export
+ * @returns
+ */
+export function randomKey() {
+  return Math.random().toString(16).slice(2);
+}

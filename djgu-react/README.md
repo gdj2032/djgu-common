@@ -97,3 +97,7 @@ cmx.mul(1, 1)
 cmx.div(1, 1)
 
 ```
+
+# randomKey 随机值
+
+# downloadFile blob文件下载
