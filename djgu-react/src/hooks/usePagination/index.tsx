@@ -63,42 +63,38 @@ interface IServerParams {
   current: number;
 }
 
-interface IServerInfo<T> {
+type IInfoBack<T> = { dataSource: T[]; total: number }
+
+type IInfoServer<T> = (params: IServerParams) => IInfoBack<T> | Promise<IInfoBack<T>>
+
+interface IInfoOption<T> {
   /**
-   * 服务请求
+   * 第一次是否执行server
    *
-   * @memberof IServerInfo
    */
-  server: (params: IServerParams) => {
-    dataSource: T[]; total: number
-  } | Promise<{ dataSource: T[]; total: number }>,
-  deps?: DependencyList, // 依赖条件 数据更新默认执行server
-  option?: {
-    /**
-     * 第一次是否执行server
-     *
-     */
-    isReady?: boolean;
-    /**
-     * 默认的数据
-     *
-     */
-    dataSource?: T[];
-    /**
-     * 默认当前第几页
-     *
-     */
-    current?: number;
-    /**
-     * 默认一页几条数据
-     *
-     */
-    pageSize?: number;
-  }
+  isReady?: boolean;
+  /**
+   * 默认的数据
+   *
+   */
+  dataSource?: T[];
+  /**
+   * 默认当前第几页
+   *
+   */
+  current?: number;
+  /**
+   * 默认一页几条数据
+   *
+   */
+  pageSize?: number;
 }
 
-const usePagination = <T,>(info: IServerInfo<T>): PaginationResult<T> => {
-  const { server, deps, option } = info;
+const usePagination = <T,>(
+  server: IInfoServer<T>,
+  deps?: DependencyList, // 依赖条件 数据更新默认执行server
+  option?: IInfoOption<T>,
+): PaginationResult<T> => {
   const {
     isReady = true,
     dataSource: propDataSource = [],
