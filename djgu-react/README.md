@@ -35,6 +35,13 @@ const {
 })
 ```
 
+## useQuery 获取地址路径参数 默认为当前页面路径 可传参
+
+```js
+const {} = useQuery()
+const { activeTab } = useQuery('https://www.npmjs.com/package/@djgu/react-comps?activeTab=readme')
+```
+
 # 弹窗 openModal(react18.0之前) / openModal2(react18.0之后) (以 antd5.x 为例)
 
 ## modal.tsx
@@ -101,3 +108,5 @@ cmx.div(1, 1)
 # randomKey 随机值
 
 # downloadFile blob文件下载
+
+# isURL 判断url是否合法

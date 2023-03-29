@@ -21,11 +21,21 @@ const getQueryOption = (url: string) => {
   return opt;
 }
 
-// 获取页面路由参数 xxx?id=111 返 { id: '111' }
-export default function useQuery<T = any>(): T {
+/**
+ * 获取url的query参数 xxx?id=111 返 { id: '111' }
+ *
+ * @author gdj
+ * @date 2023-03-29
+ * @export
+ * @template T
+ * @param [u]
+ * @returns
+ */
+export default function useQuery<T = any>(u?: string): T {
   const loc = useLocation();
-  if (loc?.href) {
-    const opt = getQueryOption(loc.href)
+  let url = u || loc?.href;
+  if (url) {
+    const opt = getQueryOption(url)
     return (opt as unknown) as T;
   }
   return {} as unknown as T;
