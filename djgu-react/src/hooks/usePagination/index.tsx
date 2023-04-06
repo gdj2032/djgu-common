@@ -128,13 +128,10 @@ const usePagination = <T,>(
       let { dataSource: data_source, total: _total } = await server({
         limit: _pageSize, offset: Math.round((_current - 1) * _pageSize), current: _current
       });
-      console.info('--- _total1 --->', _total, current);
       if (_seq !== seq.current) return;
       if (pageSize * (_current - 1) >= _total && _current !== 1) {
-        console.info('--- 2222 --->');
         _current = 1;
         const totalPage = Math.ceil(_total / pageSize);
-        console.info('--- totalPage --->', totalPage);
         ({ dataSource: data_source, total: _total } = await server({
           limit: _pageSize, offset: Math.round((totalPage - 1) * _pageSize), current: _current
         }));
