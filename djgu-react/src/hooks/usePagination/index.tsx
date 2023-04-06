@@ -3,7 +3,6 @@ import {
 } from 'react';
 import { debounce } from 'lodash';
 import { useLatest } from 'react-use';
-import { nextTick } from '@/utils';
 
 interface IPaginationProps {
   current: number;
@@ -104,7 +103,7 @@ const usePagination = <T,>(
   // 是否完成了一次请求
   const [isFirstComplete, setIsFirstComplete] = useState(false);
   // 分页
-  const [current, setCurrent] = useState(propCurrent);
+  const current = useRef(propCurrent);
   const [pageSize, setPageSize] = useState(propPageSize);
   const [total, setTotal] = useState(0);
 
@@ -118,7 +117,7 @@ const usePagination = <T,>(
     if (!isReady) {
       return;
     }
-    let _current = current;
+    let _current = current.current;
     const _pageSize = pageSize;
     setIsLoading(true);
 
@@ -129,9 +128,13 @@ const usePagination = <T,>(
       let { dataSource: data_source, total: _total } = await server({
         limit: _pageSize, offset: Math.round((_current - 1) * _pageSize), current: _current
       });
+      console.info('--- _total1 --->', _total, current);
       if (_seq !== seq.current) return;
       if (pageSize * (_current - 1) >= _total && _current !== 1) {
+        console.info('--- 2222 --->');
+        _current = 1;
         const totalPage = Math.ceil(_total / pageSize);
+        console.info('--- totalPage --->', totalPage);
         ({ dataSource: data_source, total: _total } = await server({
           limit: _pageSize, offset: Math.round((totalPage - 1) * _pageSize), current: _current
         }));
@@ -139,7 +142,7 @@ const usePagination = <T,>(
         _current = totalPage;
       }
       setDataSource(data_source);
-      setCurrent(_current);
+      current.current = _current
       setPageSize(_pageSize);
       setTotal(_total);
     } catch (error) {
@@ -156,10 +159,10 @@ const usePagination = <T,>(
   /* 暴露方法 */
   const refresh = async (resetPage?: boolean) => {
     if (resetPage) {
-      setCurrent(propCurrent);
+      current.current = propCurrent
       setPageSize(propPageSize);
     }
-    await latestDoSearch.current();
+    latestDoSearch.current()
   };
 
   /* 重置逻辑 */
@@ -167,7 +170,7 @@ const usePagination = <T,>(
 
   useEffect(() => {
     if (!isReady) return;
-    refresh(true);
+    debounceRefresh(true);
   }, _deps);
 
   const debounceRefresh = useCallback(
@@ -190,22 +193,18 @@ const usePagination = <T,>(
       dataSource,
     },
     paginationProps: {
-      current,
+      current: current.current,
       pageSize,
       total,
-      onChange: async (_page: number, _pageSize: number) => {
-        setCurrent(_page);
+      onChange: async (_cur: number, _pageSize: number) => {
+        current.current = _cur
         setPageSize(_pageSize)
-        await nextTick(async () => {
-          await refresh();
-        });
+        debounceRefresh()
       },
-      onShowSizeChange: async (cur: number, size: number) => {
-        setCurrent(cur)
-        setPageSize(size)
-        await nextTick(async () => {
-          await refresh();
-        });
+      onShowSizeChange: async (_cur: number, _pageSize: number) => {
+        current.current = _cur
+        setPageSize(_pageSize)
+        debounceRefresh()
       },
       showTotal: (_t: number) => `共 ${_t} 条`,
       showQuickJumper: true,

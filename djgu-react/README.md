@@ -1,4 +1,20 @@
-# react 组件库 version >= 16.8
+react 组件库 version >= 16.8 node > 16
+
+# 版本更新内容
+
+## v1.0.0
+  usePagination
+  useVirtualList
+  openModal/openModal2
+  cmx
+  randomKey
+  downloadFile
+
+## v1.0.1
+  hooks-useQuery
+  isURL
+
+# 使用
 
 ```js
 npm i @djgu/react-comps

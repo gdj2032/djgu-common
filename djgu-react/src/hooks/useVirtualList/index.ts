@@ -1,6 +1,6 @@
 // 虚拟列表加载
 import { debounce } from 'lodash';
-import { DependencyList, useEffect, useRef, useState } from 'react';
+import { DependencyList, useCallback, useEffect, useRef, useState } from 'react';
 import { PAGE_SIZE } from '@/constants';
 
 export interface IPaginationResult<T> {
@@ -93,7 +93,7 @@ const useVirtualList = <T,>(
   // 是否完成了一次请求
   const [isFirstComplete, setIsFirstComplete] = useState(false);
   // 分页
-  const [current, setCurrent] = useState(propCurrent);
+  const current = useRef(propCurrent);
   const [pageSize, setPageSize] = useState(propPageSize);
   const [total, setTotal] = useState(0);
 
@@ -107,7 +107,7 @@ const useVirtualList = <T,>(
     if (!isReady) {
       return;
     }
-    let _current = current;
+    let _current = current.current;
     const _pageSize = pageSize;
     setIsLoading(true)
 
@@ -125,7 +125,7 @@ const useVirtualList = <T,>(
         // message.error('数据源发生变化，该页没有数据，自动加载最后一页');
       }
       setDataSource(dataSource.concat(data0 as any))
-      setCurrent(_current)
+      current.current = _current
       setPageSize(_pageSize)
       setTotal(total0)
     } catch (error) {
@@ -140,12 +140,12 @@ const useVirtualList = <T,>(
   const refresh = async (reset?: boolean) => {
     if (reset) {
       setDataSource([])
-      setCurrent(propCurrent)
+      current.current = propCurrent
       setPageSize(propPageSize)
     } else {
-      const curTotal = pageSize * (current);
+      const curTotal = pageSize * (current.current);
       if (total && total <= curTotal) return;
-      setCurrent(current + 1)
+      current.current = current.current + 1
     }
     await doSearch();
   };
@@ -155,14 +155,28 @@ const useVirtualList = <T,>(
 
   useEffect(() => {
     if (!isReady) return;
-    refresh(true);
+    debounceRefresh(true);
   }, _deps);
+
+  const debounceRefresh = useCallback(
+    debounce(
+      (resetPage?: boolean) => {
+        // todo: resetPage应该直接重置非reset的缓存
+        refresh(resetPage);
+      },
+      100,
+      {
+        maxWait: 400,
+      },
+    ),
+    [],
+  );
 
   return {
     loading: isLoading,
     dataSource,
     paginationProps: {
-      current,
+      current: current.current,
       pageSize,
       total,
     },
@@ -170,12 +184,7 @@ const useVirtualList = <T,>(
     refresh: async (reset?: boolean) => {
       await refresh(reset);
     },
-    debounceRefresh: debounce(
-      async (reset?: boolean) => {
-        await refresh(reset);
-      },
-      500,
-    ),
+    debounceRefresh,
     setDataSource,
     setTotal,
   }
