@@ -3,10 +3,10 @@
 generators:
   -
     name: '通用'
-    repo: 'https://gitee.com/djgu/react-cli.git'
+    repo: 'git@gitee.com/djgu/react-template.git'
   -
     name: '移动端'
-    repo: 'git@gitee.com:djgu/react-cli.git'
+    repo: 'git@gitee.com:djgu/react-native-templete.git'
   -
     name: '管理端'
-    repo: 'git@gitee.com:djgu/react-cli.git'
+    repo: 'git@gitee.com:djgu/react-electron-pc-client.git'

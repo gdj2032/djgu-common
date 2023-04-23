@@ -1,17 +1,17 @@
 {
   "name": "@djgu/cli",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "create/gdj-create-app new"
   },
   "bin": {
-    "@djgu/cli-create-app": "create/gdj-create-app"
+    "djgu-create-app": "create/gdj-create-app"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gdj2032/djgu-common/tree/main/djgu-react"
+    "url": "https://github.com/gdj2032/djgu-common/tree/main/djgu-cli"
   },
   "publishConfig": {
     "access": "public"
