@@ -1,0 +1,29 @@
+#!/usr/bin/env node
+
+const commander = require('commander')
+const updateNotifier = require('update-notifier')
+const pkg = require('../package.json')
+const creator = require('./index')
+
+console.log('gdj-tools version ', pkg.version);
+// new version update notification
+updateNotifier({ pkg, updateCheckInterval: 0 }).notify()
+
+commander.version(require('../package.json').version, '-v, --version')
+
+commander
+  .command('upgrade')
+  .description('升级框架代码')
+  .action(() => creator.updateApp())
+
+commander
+  .command('new')
+  .description('当前目录创建新框架')
+  .action(() => creator.createApp())
+
+commander
+  .parse(process.argv)
+
+if (!process.argv.slice(2).length) {
+  commander.outputHelp()
+}
