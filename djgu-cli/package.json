@@ -8,7 +8,7 @@
   },
   "preferGlobal": true,
   "bin": {
-    "djgu": "./create/gdj-create-app"
+    "djgu-cli": "./create/gdj-create-app"
   },
   "repository": {
     "type": "git",
