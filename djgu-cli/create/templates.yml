@@ -3,7 +3,7 @@
 generators:
   -
     name: '通用'
-    repo: 'https://gitee.com/djgu/react-template.git'
+    repo: 'git@gitee.com:djgu/react-template.git'
   -
     name: '移动端'
     repo: 'https://gitee.com:djgu/react-native-templete.git'
