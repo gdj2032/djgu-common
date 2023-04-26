@@ -1,6 +1,6 @@
 {
   "name": "@djgu/cli",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "preferGlobal": true,
   "bin": {
-    "djgu-create-app": "create/gdj-create-app"
+    "djgu": "./create/gdj-create-app"
   },
   "repository": {
     "type": "git",
