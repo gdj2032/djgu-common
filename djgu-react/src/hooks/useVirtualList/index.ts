@@ -1,6 +1,6 @@
 // 虚拟列表加载
 import { debounce } from 'lodash';
-import { DependencyList, useCallback, useEffect, useRef, useState } from 'react';
+import { DependencyList, useEffect, useRef, useState } from 'react';
 import { PAGE_SIZE } from '@/constants';
 
 export interface IPaginationResult<T> {
@@ -103,7 +103,7 @@ const useVirtualList = <T,>(
 
   // 计数器
   const seq = useRef(0);
-  const doSearch = async () => {
+  const doSearch = async (reset?: boolean) => {
     if (!isReady) {
       return;
     }
@@ -124,7 +124,8 @@ const useVirtualList = <T,>(
         _current = totalPage;
         // message.error('数据源发生变化，该页没有数据，自动加载最后一页');
       }
-      setDataSource(dataSource.concat(data0 as any))
+      const d = reset ? data0 : dataSource.concat(data0 as any)
+      setDataSource(d)
       current.current = _current
       setPageSize(_pageSize)
       setTotal(total0)
@@ -147,7 +148,7 @@ const useVirtualList = <T,>(
       if (total && total <= curTotal) return;
       current.current = current.current + 1
     }
-    await doSearch();
+    await doSearch(reset);
   };
 
   /* 重置逻辑 */
@@ -158,19 +159,17 @@ const useVirtualList = <T,>(
     debounceRefresh(true);
   }, _deps);
 
-  const debounceRefresh = useCallback(
-    debounce(
-      (resetPage?: boolean) => {
-        // todo: resetPage应该直接重置非reset的缓存
-        refresh(resetPage);
-      },
-      100,
-      {
-        maxWait: 400,
-      },
-    ),
-    [],
-  );
+  const debounceRefresh = debounce(
+    (resetPage?: boolean) => {
+      // todo: resetPage应该直接重置非reset的缓存
+      refresh(resetPage);
+    },
+    100,
+    {
+      maxWait: 400,
+    },
+  )
+
 
   return {
     loading: isLoading,
