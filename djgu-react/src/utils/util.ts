@@ -77,23 +77,22 @@ export function isURL(url: string) {
  * @returns
  */
 export function unique<T = any>(arr: T[], key?: string): {
+  arr: T[],
   newArr: T[];
   repeatArr: T[];
   isRepeat: boolean;
 } {
   const map = new Map()
-  const repeatArr: T[] = []
-  const newArr = arr.filter((item: T) => {
+  const repeatArr = arr.filter((item) => {
     // @ts-ignore
     const itemKey = key ? item[key] : item;
     let repeat = true
-    if (map.has(itemKey)) {
-      repeatArr.push(item)
-    } else {
-      map.set(itemKey, 1)
+    if (!map.has(itemKey)) {
+      map.set(itemKey, item)
       repeat = false;
     }
     return repeat;
   })
-  return { newArr, repeatArr, isRepeat: newArr.length !== arr.length }
+  const newArr = [...map.values() as unknown as T[]]
+  return { arr, newArr, repeatArr, isRepeat: newArr.length !== arr.length }
 }
