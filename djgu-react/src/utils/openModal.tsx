@@ -6,7 +6,7 @@ const destroyFns: Array<() => void> = [];
 interface IModalProps {
   /* 限制这3个参数必须 */
   visible: boolean;
-  onClose: any;
+  // onClose: any;
   afterClose: (params?: any) => void
   [key: string]: any;
 }

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.4",
+  "version": "1.0.5",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -42,8 +42,7 @@
   "name": "@djgu/react-comps",
   "author": "djgu",
   "module": "dist/djgu-react.esm.js",
-  "size-limit": [
-    {
+  "size-limit": [{
       "path": "dist/djgu-react.cjs.production.min.js",
       "limit": "10 KB"
     },

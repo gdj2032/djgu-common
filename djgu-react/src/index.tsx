@@ -7,11 +7,13 @@ import {
 import {
   openModal,
   openModal2,
+  IModalProps,
   cmx,
   nextTick,
   downloadFile,
   randomKey,
   isURL,
+  unique,
 } from './utils'
 
 export {
@@ -20,9 +22,11 @@ export {
   useVirtualList,
   openModal,
   openModal2,
+  IModalProps,
   cmx,
   nextTick,
   downloadFile,
   randomKey,
   isURL,
+  unique,
 }
