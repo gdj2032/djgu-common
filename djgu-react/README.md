@@ -128,3 +128,9 @@ cmx.div(1, 1)
 ## downloadFile blob文件下载
 
 ## isURL 判断url是否合法
+
+## useInterval 定时器 v1.0.6
+
+## useTimeout 定时器 v1.0.6
+
+## useWindowSize 窗口大小改变时 v1.0.6
