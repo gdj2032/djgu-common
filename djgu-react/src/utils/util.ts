@@ -96,3 +96,49 @@ export function unique<T = any>(arr: T[], key?: string): {
   const newArr = [...map.values() as unknown as T[]]
   return { arr, newArr, repeatArr, isRepeat: newArr.length !== arr.length }
 }
+
+/**
+ * 获取对象值
+ *
+ * @author gdj
+ * @date 2024-03-26
+ * @export
+ * @param obj
+ * @param params 'user.name' | 'users[0].name'
+ */
+export function get(obj: any, values: string) {
+  if (!obj) return undefined;
+  const arr = values.split('.') || [];
+  let foo = obj
+  for (const key of arr) {
+    if (key.includes('[') && key.includes(']')) {
+      // 数组
+      const splitKey = '~~~'
+      const ks = key.replace(/\[|\]/g, splitKey)
+      const arr2 = ks.split(splitKey).filter(e => !!e);
+      const k = arr2[0];
+      let f = foo[k]
+      const type = Object.prototype.toString.call(f)
+      if (type === '[object Array]') {
+        for (let i = 1; i < arr2.length; i++) {
+          if (f && f.length > arr2[i]) {
+            f = f[arr2[i]]
+          } else {
+            f = undefined;
+            break;
+          }
+        }
+        foo = f;
+      } else if (type === '[object Object]') {
+        foo = f;
+      } else {
+        foo = undefined;
+      }
+    } else {
+      // 非数组
+      foo = foo ? foo[key] : undefined;
+    }
+  }
+  return foo;
+}
+
